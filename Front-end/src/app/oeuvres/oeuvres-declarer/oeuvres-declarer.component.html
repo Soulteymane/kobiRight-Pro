@@ -1,0 +1,234 @@
+<div class="stepper">
+  <ul id="progressbar">
+    <li [ngClass]="currentStep>=1 ? 'active ' : 'inactive'">Étape 1: Type d'œuvre et Informations générales</li>
+    <li [ngClass]="currentStep>=2 ? 'active' : 'inactive'">Étape 2: Ajouter les œuvres</li>
+    <li [ngClass]="currentStep>=3 ? 'active' : 'inactive'">Étape 3: Ajouter les ayants droit</li>
+    <li [ngClass]="currentStep>=4 ? 'active' : 'inactive'">Étape 4: Signature et Validation</li>
+  </ul>
+  <!-- Steps Progress Bar -->
+  <div class="step" [class.active]="currentStep === 1">
+    <h2>Étape 1: Type d'œuvre et Informations générales</h2>
+    <form [formGroup]="firstFormGroup">
+      <div class="form-group">
+        <label for="imageDeCouverture">Image de couverture</label>
+        <input id="imageDeCouverture" formControlName="imageDeCouverture" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="typeOeuvre">Type d'œuvre</label>
+        <select id="typeOeuvre" formControlName="typeOeuvre" class="form-control">
+          <option value="Single">Single</option>
+          <option value="Album">Album</option>
+          <option value="EP">EP</option>
+          <option value="Mixtape">Mixtape</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="nom">Nom de l'œuvre</label>
+        <input id="nom" formControlName="nom" class="form-control" required>
+      </div>
+      <button type="button" class="btn btn-primary" (click)="nextStep()">Suivant</button>
+    </form>
+  </div>
+
+  <div class="step" [class.active]="currentStep === 2">
+    <h2>Étape 2: Ajouter les œuvres</h2>
+    <div *ngFor="let work of worksControls; let i = index">
+      <form [formGroup]="work">
+        <div class="form-group">
+          <label for="titre">Titre de la musique</label>
+          <input id="titre" formControlName="titre" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="sousTitre">Sous-titre</label>
+          <input id="sousTitre" formControlName="sousTitre" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="origine">Origine</label>
+          <input id="origine" formControlName="origine" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="duree">Durée</label>
+          <input id="duree" formControlName="duree" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="bpm">BPM</label>
+          <input id="bpm" formControlName="bpm" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="interprete">Interprète</label>
+          <input id="interprete" formControlName="interprete" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="genre">Genre</label>
+          <input id="genre" formControlName="genre" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="style">Style</label>
+          <input id="style" formControlName="style" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="fichier">Fichier</label>
+          <input id="fichier" formControlName="fichier" class="form-control">
+        </div>
+
+        <button type="button" class="btn btn-danger" (click)="removeWork(i)" *ngIf="showMultipleWorks()">Supprimer</button>
+      </form>
+    </div>
+    <button type="button" class="btn btn-secondary" (click)="addWork()" *ngIf="showAddWorkButton()">Ajouter une œuvre</button>
+    <button type="button" class="btn btn-secondary" (click)="previousStep()">Précédent</button>
+    <button type="button" class="btn btn-primary" (click)="nextStep()">Suivant</button>
+  </div>
+
+  <div class="step" [class.active]="currentStep === 3">
+    <h2>Étape 3: Ajouter les ayants droit</h2>
+    <div *ngFor="let workControl of worksControls; let i = index">
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3>{{ workControl.get('titre')!.value }}</h3>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="workControl">
+            <div *ngIf="workControl.get('ayantsDroit') as ayantsDroitControl">
+              <div *ngFor="let ayantDroitControl of (ayantsDroitControl.value ?? []); let j = index">
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <form [formGroup]="ayantDroitControl">
+                      <div class="form-group">
+                        <label for="nomAyantDroit-{{i}}-{{j}}">Nom</label>
+                        <input id="nomAyantDroit-{{i}}-{{j}}" formControlName="nomAyantDroit" class="form-control" required (input)="searchUsersByName($event, i, j)">
+                        <div *ngIf="users.length > 0 && selectedWorkIndex === i && selectedAyantDroitIndex === j">
+                          <ul>
+                            <li *ngFor="let user of users" (click)="selectUser(user, i, j)">
+                              {{ user.nom }} {{ user.prenom }}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <!-- Add other fields as needed -->
+                      <div class="form-group">
+                        <label for="pseudonyme-{{i}}-{{j}}">Pseudonyme</label>
+                        <input id="pseudonyme-{{i}}-{{j}}" formControlName="pseudonyme" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label for="codeIPI-{{i}}-{{j}}">Code IPI</label>
+                        <input id="codeIPI-{{i}}-{{j}}" formControlName="codeIPI" class="form-control" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="role-{{i}}-{{j}}">Rôle</label>
+                        <select id="role-{{i}}-{{j}}" formControlName="role" class="form-control" required>
+                          <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="telephone-{{i}}-{{j}}">Téléphone</label>
+                        <input id="telephone-{{i}}-{{j}}" formControlName="telephone" class="form-control" required pattern="^[0-9]+$">
+                      </div>
+                      <div class="form-group">
+                        <label for="email-{{i}}-{{j}}">Email</label>
+                        <input id="email-{{i}}-{{j}}" formControlName="email" class="form-control" required type="email">
+                      </div>
+                      <div class="form-group">
+                        <label for="pourcentage-{{i}}-{{j}}">Pourcentage</label>
+                        <input id="pourcentage-{{i}}-{{j}}" formControlName="pourcentage" class="form-control" required pattern="^[0-9]+$">
+                      </div>
+                    </form>
+                    <button type="button" (click)="removeAyantDroit(i, j)">Remove Ayant Droit</button>
+                  </div>
+                </div>
+              </div>
+              <button type="button" (click)="addAyantDroit(i)">Add Ayant Droit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-secondary" (click)="previousStep()">Précédent</button>
+    <button type="button" class="btn btn-primary" (click)="nextStep()">Suivant</button>
+  </div>
+
+
+  <!--  <div class="step" [class.active]="currentStep === 3">-->
+<!--    <h2>Étape 3: Ajouter les ayants droit</h2>-->
+<!--    <div *ngFor="let workControl of worksControls; let i = index">-->
+<!--      <div class="card mb-3">-->
+<!--        <div class="card-header">-->
+<!--          <h3>{{ workControl.get('titre')?.value }}</h3>-->
+<!--        </div>-->
+<!--        <div class="card-body">-->
+<!--          <form [formGroup]="workControl">-->
+<!--            <div *ngFor="let ayantDroitControl of ayantsDroitControls; let j = index">-->
+<!--              <div class="card mb-3">-->
+<!--                <div class="card-body">-->
+<!--                  <form [formGroup]="ayantDroitControl">-->
+<!--                    <div class="form-group">-->
+<!--                      <label for="nomAyantDroit-{{i}}-{{j}}">Nom</label>-->
+<!--                      <input id="nomAyantDroit-{{i}}-{{j}}" formControlName="nomAyantDroit" class="form-control" required (input)="searchUsersByName($event, i, j)">-->
+<!--                      <div *ngIf="users.length > 0">-->
+<!--                        <ul>-->
+<!--                          <li *ngFor="let user of users" (click)="selectUser(user, i, j)">-->
+<!--                            {{ user.nom }} {{ user.prenom }}-->
+<!--                          </li>-->
+<!--                        </ul>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    &lt;!&ndash; Add other fields as needed &ndash;&gt;-->
+<!--                    <div class="form-group">-->
+<!--                      <label for="prenom-{{i}}-{{j}}">Prénom</label>-->
+<!--                      <input id="prenom-{{i}}-{{j}}" formControlName="prenom" class="form-control" required>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                      <label for="pseudonyme-{{i}}-{{j}}">Pseudonyme</label>-->
+<!--                      <input id="pseudonyme-{{i}}-{{j}}" formControlName="pseudonyme" class="form-control">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                      <label for="codeIPI-{{i}}-{{j}}">Code IPI</label>-->
+<!--                      <input id="codeIPI-{{i}}-{{j}}" formControlName="codeIPI" class="form-control" required>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                      <label for="role-{{i}}-{{j}}">Rôle</label>-->
+<!--                      <select id="role-{{i}}-{{j}}" formControlName="role" class="form-control" required>-->
+<!--                        <option *ngFor="let role of roles" [value]="role">{{ role }}</option>-->
+<!--                      </select>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                      <label for="telephone-{{i}}-{{j}}">Téléphone</label>-->
+<!--                      <input id="telephone-{{i}}-{{j}}" formControlName="telephone" class="form-control" required pattern="^[0-9]+$">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                      <label for="email-{{i}}-{{j}}">Email</label>-->
+<!--                      <input id="email-{{i}}-{{j}}" formControlName="email" class="form-control" required type="email">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                      <label for="pourcentage-{{i}}-{{j}}">Pourcentage</label>-->
+<!--                      <input id="pourcentage-{{i}}-{{j}}" formControlName="pourcentage" class="form-control" required pattern="^[0-9]+$">-->
+<!--                    </div>-->
+<!--                  </form>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </form>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <button type="button" class="btn btn-secondary" (click)="previousStep()">Précédent</button>-->
+<!--    <button type="button" class="btn btn-primary" (click)="nextStep()">Suivant</button>-->
+<!--  </div>-->
+
+
+  <div class="step" [class.active]="currentStep === 4">
+    <h2>Étape 4: Signature et validation</h2>
+    <form [formGroup]="fourthFormGroup">
+      <div class="form-group">
+        <label for="signature">Signature</label>
+        <input id="signature" formControlName="signature" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" formControlName="validation"> Je valide les informations fournies
+        </label>
+      </div>
+      <button type="button" class="btn btn-secondary" (click)="previousStep()">Précédent</button>
+      <button type="button" class="btn btn-primary" (click)="submit()">Soumettre</button>
+    </form>
+  </div>
+</div>
