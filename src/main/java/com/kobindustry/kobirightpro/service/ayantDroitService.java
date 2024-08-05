@@ -25,6 +25,7 @@ public class ayantDroitService {
 //    List<AyantDroit> findByNomAyantDroitContainingIgnoreCase(String nomAyantDroit);
 
     public AyantDroit saveAyantDroit(AyantDroit ayantDroit) {
+
         return ayantDroitRepository.save(ayantDroit);
     }
 

@@ -25,6 +25,7 @@ public class oeuvreController {
 
     @PostMapping
     public ResponseEntity<Oeuvres> createOeuvre(@RequestBody Oeuvres oeuvre) {
+        System.out.println("Received oeuvre: " + oeuvre);
         Oeuvres savedOeuvre = oeuvresService.saveOeuvre(oeuvre);
         return new ResponseEntity<>(savedOeuvre, HttpStatus.CREATED);
     }

@@ -28,11 +28,18 @@ public enum Role {
 
     @JsonCreator
     public static Role fromValue(String value) {
+        if (value == null || value.isEmpty()) {
+            // Si la chaîne est vide ou null, renvoyez null ou une valeur par défaut
+            return null; // ou une valeur par défaut comme Role.ADMINISTRATEUR
+        }
+
         for (Role role : Role.values()) {
             if (role.value.equalsIgnoreCase(value)) {
                 return role;
             }
         }
+        // Ajoutez cette ligne pour loguer la valeur problématique
+        System.err.println("Unknown enum type " + value);
         throw new IllegalArgumentException("Unknown enum type " + value);
     }
 }

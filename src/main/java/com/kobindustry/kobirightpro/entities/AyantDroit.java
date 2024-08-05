@@ -19,6 +19,7 @@ public class AyantDroit {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
     private String telephone;
     private String email;
     private Integer pourcentage;

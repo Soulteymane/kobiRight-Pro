@@ -34,5 +34,4 @@ public class Work {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AyantDroit> ayantsDroit;
 
-    // Autres champs et méthodes
 }

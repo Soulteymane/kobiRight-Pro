@@ -24,5 +24,8 @@ public class Oeuvres implements Serializable {
 
     @OneToMany(mappedBy = "oeuvre", cascade = CascadeType.ALL)
     private List<Work> works;
+
+    @OneToMany
+    private List<AyantDroit> ayantsdroits;
 }
 
