@@ -15,14 +15,6 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatSelectModule} from "@angular/material/select";
 import {MatIconModule} from "@angular/material/icon";
-import {MatCheckbox} from "@angular/material/checkbox";
-import {MatList, MatListItem} from "@angular/material/list";
-import {
-  MatAccordion, MatExpansionModule,
-  MatExpansionPanel,
-  MatExpansionPanelDescription,
-  MatExpansionPanelTitle
-} from "@angular/material/expansion";
 
 
 
@@ -45,15 +37,6 @@ import {
     MatAutocompleteModule,
     MatSelectModule,
     MatIconModule, // Ajouté pour éviter les erreurs liées aux icônes
-    NgbModule,
-    MatCheckbox,
-    MatList,
-    MatListItem,
-    MatAccordion,
-    MatExpansionPanel,
-    MatExpansionPanelTitle,
-    MatExpansionModule,
-    MatExpansionPanelDescription
   ]
 })
 export class OeuvresModule { }

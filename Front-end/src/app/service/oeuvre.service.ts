@@ -18,10 +18,6 @@ export class OeuvreService {
     });
   }
 
-  addAyantsDroit(oeuvreId: string, ayantsDroit: any[]): Observable<any> {
-    return this.http.post(`/api/oeuvres/${oeuvreId}/ayants-droit`, ayantsDroit);
-  }
-
 
   // searchAyantDroitsByName(name: string): Observable<any[]> {
   //   return this.http.get<any[]>(`${this.apiUrl}/ayants-droit/search?name=${name}`);

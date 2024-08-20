@@ -1,229 +1,23 @@
-<mat-horizontal-stepper [linear]="true" [selectedIndex]="getStepIndex()" (selectionChange)="onStepChange($event)">
-  <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
-      <ng-template matStepLabel>Information de base</ng-template>
-
-      <mat-form-field appearance="fill">
-        <mat-label>Type d'oeuvre</mat-label>
-        <mat-select formControlName="typeOeuvre" required>
-          <mat-option value="Single">Single</mat-option>
-          <mat-option value="Album">Album</mat-option>
-          <mat-option value="EP">EP</mat-option>
-        </mat-select>
-        <mat-error *ngIf="firstFormGroup.get('typeOeuvre')?.hasError('required')">Ce champ est requis.</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>Nom</mat-label>
-        <input matInput formControlName="nom" required />
-        <mat-error *ngIf="firstFormGroup.get('nom')?.hasError('required')">Ce champ est requis.</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>Image de couverture</mat-label>
-        <input matInput formControlName="imageDeCouverture" required />
-        <mat-error *ngIf="firstFormGroup.get('imageDeCouverture')?.hasError('required')">Ce champ est requis.</mat-error>
-      </mat-form-field>
-
-      <div>
-        <button mat-button matStepperNext [disabled]="!firstFormGroup.valid">Suivant</button>
       </div>
     </form>
-  </mat-step>
 
-  <mat-step [stepControl]="secondFormGroup">
-    <form [formGroup]="secondFormGroup">
-      <ng-template matStepLabel>Oeuvres</ng-template>
-      <div formArrayName="works">
-        <mat-accordion>
-          <div *ngFor="let work of worksControls; let i = index" [formGroupName]="i">
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  {{ work.get('titre')?.value || 'Nouvelle Oeuvre' }}
-                </mat-panel-title>
-                <mat-panel-description>
-                  Cliquez pour voir les détails
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-
-              <div class="work-details">
-
-                <mat-form-field appearance="fill">
-                  <mat-label>Titre</mat-label>
-                  <input matInput formControlName="titre" required />
-                  <mat-error *ngIf="work.get('titre')?.hasError('required')">Ce champ est requis.</mat-error>
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                  <mat-label>Sous-titre</mat-label>
-                  <input matInput formControlName="sousTitre" />
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                  <mat-label>Origine</mat-label>
-                  <input matInput formControlName="origine" />
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                  <mat-label>Durée</mat-label>
-                  <input matInput formControlName="duree" />
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                  <mat-label>BPM</mat-label>
-                  <input matInput formControlName="bpm" />
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                  <mat-label>Interprète</mat-label>
-                  <input matInput formControlName="interprete" />
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                  <mat-label>Genre</mat-label>
-                  <input matInput formControlName="genre" />
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                  <mat-label>Style</mat-label>
-                  <input matInput formControlName="style" />
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                  <mat-label>Fichier</mat-label>
-                  <input matInput formControlName="fichier" />
-                </mat-form-field>
-
-                <div formArrayName="ayantsDroit">
-                  <div *ngFor="let ad of getAyantsDroitControls(i)?.controls; let j = index" [formGroupName]="j" class="ayant-droit-section">
-                    <mat-form-field appearance="fill">
-                      <mat-label>Nom</mat-label>
-                      <input matInput formControlName="nomAyantDroit" required (input)="searchUsersByName($event, i, j)" />
-                      <mat-error *ngIf="ad.get('nomAyantDroit')?.hasError('required')">Ce champ est requis.</mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="fill">
-                      <mat-label>Prénom</mat-label>
-                      <input matInput formControlName="prenom" required />
-                      <mat-error *ngIf="ad.get('prenom')?.hasError('required')">Ce champ est requis.</mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="fill">
-                      <mat-label>Pseudonyme</mat-label>
-                      <input matInput formControlName="pseudonyme" />
-                    </mat-form-field>
-
-                    <mat-form-field appearance="fill">
-                      <mat-label>Code IPI</mat-label>
-                      <input matInput formControlName="codeIPI" required />
-                      <mat-error *ngIf="ad.get('codeIPI')?.hasError('required')">Ce champ est requis.</mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="fill">
-                      <mat-label>Role</mat-label>
-                      <mat-select formControlName="role" required>
-                        <mat-option *ngFor="let role of roles" [value]="role">{{ role }}</mat-option>
-                      </mat-select>
-                      <mat-error *ngIf="ad.get('role')?.hasError('required')">Ce champ est requis.</mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="fill">
-                      <mat-label>Téléphone</mat-label>
-                      <input matInput formControlName="telephone" required />
-                      <mat-error *ngIf="ad.get('telephone')?.hasError('required')">Ce champ est requis.</mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="fill">
-                      <mat-label>Email</mat-label>
-                      <input matInput formControlName="email" required />
-                      <mat-error *ngIf="ad.get('email')?.hasError('required')">Ce champ est requis.</mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="fill">
-                      <mat-label>Pourcentage</mat-label>
-                      <input matInput formControlName="pourcentage" required />
-                      <mat-error *ngIf="ad.get('pourcentage')?.hasError('required')">Ce champ est requis.</mat-error>
-                    </mat-form-field>
-
-                    <button mat-button (click)="removeAyantDroit(i, j)">Supprimer</button>
                   </div>
                 </div>
-                <button mat-button (click)="addAyantDroit(i)">Ajouter un ayant droit</button>
-                <button mat-button (click)="removeWork(i)">Supprimer l'oeuvre</button>
               </div>
-            </mat-expansion-panel>
           </div>
-        </mat-accordion>
       </div>
-
-      <button mat-button (click)="addWork()" [disabled]="!showAddWorkButton()">Ajouter une oeuvre</button>
-      <div>
-        <button mat-button matStepperPrevious>Précédent</button>
-        <button mat-button matStepperNext [disabled]="!secondFormGroup.valid">Suivant</button>
       </div>
     </form>
-  </mat-step>
 
-  <mat-step [stepControl]="thirdFormGroup">
-    <form [formGroup]="thirdFormGroup">
-      <ng-template matStepLabel>Validation</ng-template>
-      <div>
-        <h3>R�capitulatif des informations</h3>
-        <p><strong>Type d'�uvre:</strong> {{ firstFormGroup.get('typeOeuvre')?.value }}</p>
-        <p><strong>Nom:</strong> {{ firstFormGroup.get('nom')?.value }}</p>
-        <p><strong>Image de couverture:</strong> {{ firstFormGroup.get('imageDeCouverture')?.value }}</p>
-
-        <h4>�uvres:</h4>
-        <div formArrayName="works">
-          <div *ngFor="let work of worksControls; let i = index" [formGroupName]="i">
-            <p><strong>Titre:</strong> {{ work.get('titre')?.value }}</p>
-            <p><strong>Sous-titre:</strong> {{ work.get('sousTitre')?.value }}</p>
-            <p><strong>Origine:</strong> {{ work.get('origine')?.value }}</p>
-            <p><strong>Durée:</strong> {{ work.get('duree')?.value }}</p>
-            <p><strong>BPM:</strong> {{ work.get('bpm')?.value }}</p>
-            <p><strong>Interprète:</strong> {{ work.get('interprete')?.value }}</p>
-            <p><strong>Genre:</strong> {{ work.get('genre')?.value }}</p>
-            <p><strong>Style:</strong> {{ work.get('style')?.value }}</p>
-            <p><strong>Fichier:</strong> {{ work.get('fichier')?.value }}</p>
-
-            <h5>Ayants droit:</h5>
-            <div formArrayName="ayantsDroit">
-              <div *ngFor="let ad of getAyantsDroitControls(i)?.controls; let j = index" [formGroupName]="j">
-                <p><strong>Nom:</strong> {{ ad.get('nomAyantDroit')?.value }}</p>
-                <p><strong>Prénom:</strong> {{ ad.get('prenom')?.value }}</p>
-                <p><strong>Pseudonyme:</strong> {{ ad.get('pseudonyme')?.value }}</p>
-                <p><strong>Code IPI:</strong> {{ ad.get('codeIPI')?.value }}</p>
-                <p><strong>Role:</strong> {{ ad.get('role')?.value }}</p>
-                <p><strong>Téléphone:</strong> {{ ad.get('telephone')?.value }}</p>
-                <p><strong>Email:</strong> {{ ad.get('email')?.value }}</p>
-                <p><strong>Pourcentage:</strong> {{ ad.get('pourcentage')?.value }}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <div>
-        <button mat-button matStepperPrevious>Précédent</button>
-        <button mat-button matStepperNext [disabled]="!thirdFormGroup.valid">Suivant</button>
       </div>
     </form>
-  </mat-step>
 
-  <mat-step [stepControl]="fourthFormGroup">
     <form [formGroup]="fourthFormGroup">
-      <ng-template matStepLabel>Signature</ng-template>
-      <mat-form-field appearance="fill">
-        <mat-label>Signature</mat-label>
-        <input matInput formControlName="signature" required />
-        <mat-error *ngIf="fourthFormGroup.get('signature')?.hasError('required')">Ce champ est requis.</mat-error>
-      </mat-form-field>
-      <mat-checkbox formControlName="validation" required>J'accepte les conditions g�n�rales</mat-checkbox>
-      <div>
-        <button mat-button matStepperPrevious>Pr�c�dent</button>
-        <button mat-button (click)="submit()" [disabled]="!fourthFormGroup.valid">Soumettre</button>
       </div>
     </form>
-  </mat-step>
-</mat-horizontal-stepper>

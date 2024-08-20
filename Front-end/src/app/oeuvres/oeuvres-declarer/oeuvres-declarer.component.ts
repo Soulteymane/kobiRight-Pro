@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OeuvreService } from '../../service/oeuvre.service';
 import { AyantDroit } from '../../model/AyantDroit';
 import { UserService } from '../../service/user.service';
@@ -16,7 +15,6 @@ export class OeuvresDeclarerComponent implements OnInit {
   secondFormGroup!: FormGroup;
   thirdFormGroup!: FormGroup;
   fourthFormGroup!: FormGroup;
-  currentStep = 0;
   filteredAyantDroits: AyantDroit[] = [];
   roles: string[] = ['AUTEUR', 'COMPOSITEUR', 'ARRANGEUR', 'EDITEUR'];
   users: any[] = []; // To hold the searched users
@@ -73,12 +71,6 @@ export class OeuvresDeclarerComponent implements OnInit {
     return this.worksAd.controls as FormGroup[];
   }
 
-  getAyantsDroitControls(workIndex: number): FormArray | null {
-    const work = this.works.at(workIndex);
-    return work ? (work.get('ayantsDroit') as FormArray) : null;
-  }
-
-
   addWork(): void {
     const typeOeuvre = this.firstFormGroup.get('typeOeuvre')?.value;
     if (typeOeuvre !== 'Single' || this.works.length === 0) {
@@ -103,19 +95,11 @@ export class OeuvresDeclarerComponent implements OnInit {
 
   addAyantDroit(workIndex: number): void {
     const ayantsDroit = this.works.at(workIndex).get('ayantsDroit') as FormArray;
-    const ayantDroitGroup = this.fb.group({
       nomAyantDroit: ['', Validators.required],
       prenom: ['', Validators.required],
       pseudonyme: [''],
       codeIPI: ['', Validators.required],
-      role: ['', Validators.required],
-      telephone: ['', Validators.required],
-      email: ['', Validators.required],
-      pourcentage: ['', Validators.required]
-    });
-    ayantsDroit.push(ayantDroitGroup);
   }
-
 
   removeAyantDroit(workIndex: number, ayantDroitIndex: number): void {
     const ayantsDroit = this.works.at(workIndex).get('ayantsDroit') as FormArray;
@@ -133,23 +117,18 @@ export class OeuvresDeclarerComponent implements OnInit {
   }
 
   nextStep(): void {
-    if (this.currentStep === 0 && this.firstFormGroup.valid) {
       this.currentStep++;
-    } else if (this.currentStep === 1 && this.secondFormGroup.valid) {
       this.currentStep++;
-    } else if (this.currentStep === 2 && this.thirdFormGroup.valid) {
       this.currentStep++;
     }
   }
 
   previousStep(): void {
-    if (this.currentStep > 0) {
       this.currentStep--;
     }
   }
 
   submit(): void {
-    if (this.fourthFormGroup.valid) {
       const oeuvreData = {
         typeOeuvre: this.firstFormGroup.get('typeOeuvre')?.value,
         nom: this.firstFormGroup.get('nom')?.value,
@@ -174,43 +153,9 @@ export class OeuvresDeclarerComponent implements OnInit {
             email: ad.get('email')?.value,
             pourcentage: ad.get('pourcentage')?.value
           }))
-        })),
       };
 
-      // Créer l'œuvre d'abord
       this.oeuvreService.createOeuvre(oeuvreData).subscribe(
-        (response: any) => {
-          const oeuvreId = response.id; // Supposons que votre API renvoie l'ID de l'œuvre créée
-
-          // Maintenant, ajouter les ayants droit pour chaque œuvre
-          this.works.controls.forEach((work, index) => {
-            const ayantsDroit = (work.get('ayantsDroit') as FormArray).controls.map(ad => ({
-              oeuvreId: oeuvreId, // Associer l'ID de l'œuvre
-              nomAyantDroit: ad.get('nomAyantDroit')?.value,
-              prenom: ad.get('prenom')?.value,
-              pseudonyme: ad.get('pseudonyme')?.value,
-              codeIPI: ad.get('codeIPI')?.value,
-              role: ad.get('role')?.value,
-              telephone: ad.get('telephone')?.value,
-              email: ad.get('email')?.value,
-              pourcentage: ad.get('pourcentage')?.value
-            }));
-
-            // Appeler votre service pour ajouter les ayants droit
-            this.oeuvreService.addAyantsDroit(oeuvreId, ayantsDroit).subscribe(
-              () => {
-                this.snackBar.open('Ayants droit ajoutés avec succès!', 'Fermer', {
-                  duration: 5000,
-                });
-              },
-              error => {
-                this.snackBar.open('Erreur lors de l\'ajout des ayants droit', 'Fermer', {
-                  duration: 5000,
-                });
-              }
-            );
-          });
-
           this.snackBar.open('Œuvre créée avec succès!', 'Fermer', {
             duration: 5000,
           });
@@ -250,13 +195,5 @@ export class OeuvresDeclarerComponent implements OnInit {
     this.users = []; // Clear the suggestions after selection
     this.selectedWorkIndex = null;
     this.selectedAyantDroitIndex = null;
-  }
-
-  getStepIndex(): number {
-    return this.currentStep;
-  }
-
-  onStepChange(event: any): void {
-    this.currentStep = event.selectedIndex;
   }
 }
