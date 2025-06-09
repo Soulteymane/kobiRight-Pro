@@ -31,4 +31,30 @@ public class userService {
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public User updateUser(Long id, User updatedUser) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    user.setNom(updatedUser.getNom());
+                    user.setPrenom(updatedUser.getPrenom());
+                    user.setEmail(updatedUser.getEmail());
+                    user.setTelephone(updatedUser.getTelephone());
+                    user.setCodeIPI(updatedUser.getCodeIPI());
+                    user.setMotDePasse(updatedUser.getMotDePasse());
+                    user.setRole(updatedUser.getRole());
+                    return userRepository.save(user);
+                })
+                .orElseGet(() -> {
+                    updatedUser.setId(id);
+                    return userRepository.save(updatedUser);
+                });
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
 }
